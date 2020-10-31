@@ -1,3 +1,4 @@
+import time
 class PIDController:
     def __init__(self, target_pos):
         self.target_pos = target_pos
@@ -5,7 +6,10 @@ class PIDController:
         self.Ki = 0.0
         self.Kd = 0.0
         self.bias = 0.0
-        self.previous_position = 0.0
+        self.previous_error = 0.0
+        self.previous_integral = 0.0
+        self.current_time = time.time()
+        self.last_time = self.current_time
         return
 
     def reset(self):
@@ -17,10 +21,13 @@ class PIDController:
 #      use the bias in your final answer. 
     def get_fan_rpm(self, vertical_ball_position):
         error = (self.target_pos - vertical_ball_position)
-        previous_error = (self.target_pos - self.previous_position)
         proportional = (self.Kp * error)
-        integral = (self.Ki) * (error - previous_error)
-        derivative = self.Kd * (vertical_ball_position - self.previous_position)
-        output = proportional + integral + derivative
-        self.previous_position = vertical_ball_position
+        self.current_time = time.time()
+        delta_time = self.current_time - self.last_time
+        integral = (self.previous_integral + error * delta_time)
+        derivative = (error - self.previous_error)/ delta_time
+        output = proportional + (self.Ki * integral) + (self.Kd * derivative)
+        self.previous_error = error
+        self.previous_integral = integral
+        self.last_time = self.current_time
         return output
