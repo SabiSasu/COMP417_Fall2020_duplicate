@@ -173,7 +173,7 @@ class env:
                 else:
                     self.slider_target.val = 0.0
                     self.pid.target_pos = 0.0
-                if experiment_time >= 10:
+                if experiment_time >= 20:
                     running = False
                     pid_plotter.plot_matplotlib(self.t_series, self.target_series, self.y_series, self.real_pos,
                                                 self.fan_series)
