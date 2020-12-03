@@ -36,6 +36,40 @@ def computeControl( x ):
     control = 0 # This means apply no force. Please replace this with your computations and 
                 # return a single scalar (real number), force that should be applied to the cart
                 # as a function of its current state, x.
+    #print("control holds:", control)
+    #print("x holds:", x)
+    import scipy.linalg
+    import numpy as np
+    def lqr(A, B, Q, R):
+        x = scipy.linalg.solve_continuous_are(A, B, Q, R)
+        k = np.linalg.inv(R) * np.dot(B.T, x)
+        return k
+
+    # FOR YOU TODO: Fill in the values for A, B, Q and R here.
+    # Note that they should be matrices not scalars.
+    # Then, figure out how to apply the resulting k
+    # to solve for a control, u, within the policyfn that balances the cartpole.
+    A = np.array([[0, 1, 0, 0],
+                  [0, -1.6, 0, 5.9],
+                  [0, -4.8, 0, 47],
+                  [0, 0, 1, 0]])
+
+    B = np.array([[0, 1.6, 4.8, 0]])
+    B.shape = (4, 1)
+
+    Q = np.array([[1, 0, 0, 0],
+                  [0, 1, 0, 0],
+                  [0, 0, 100, 0],
+                  [0, 0, 0, 1]])
+
+    R = np.array([[1]])
+
+    # Uncomment this to get the LQR gains k once you have
+    # filled in the correct matrices.
+    k = lqr(A, B, Q, R)
+
+    for i in range(len(k[0])):
+        control += ((-k[0][i])*(x[i] - goal[i]))
 
     return control
 
